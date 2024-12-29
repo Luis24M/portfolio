@@ -1,0 +1,54 @@
+---
+const path = new URL(Astro.request.url).pathname;
+const currentPath = path.slice(1);
+console.log(currentPath);
+---
+<header class="w-full text-white fixed pt-5">
+  <!-- <h2 class="text-4xl">Luis</h2> -->
+  <nav class="w-80 md:w-[410px] p-1 md:py-2 rounded-full items-center mx-auto bg-[#46454539] backdrop-blur-3xl bg-transparent border border-[#7575755b] drop-shadow-xl">
+    <ul id="navLinks" class="flex justify-between md:gap-2 text-[#cecece] [&>li>a]:rounded-full [&>li>a]:py-1 [&>li>a]:px-2 md:[&>li>a]:py-2 md:[&>li>a]:px-4">
+        <li><a href="" class="nav-link">Inicio</a></li>
+        <li><a href="#proyectos" class="nav-link">Proyectos</a></li>
+        <li><a href="#estudios" class="nav-link">Estudios</a></li>
+        <li><a href="#contacto" class="nav-link">Contacto</a></li>
+    </ul>
+</nav>
+</header>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const links = document.querySelectorAll(".nav-link");
+        
+        const setActiveLink = () => {
+            links.forEach(link => {
+                link.classList.toggle("active", link.getAttribute("href") === window.location.hash);
+            });
+        };
+
+        setActiveLink();
+
+        window.addEventListener("hashchange", setActiveLink);
+    });
+</script>
+<style>
+  li:hover {
+    color: white;
+    transition: all 0.3s ease;
+  }
+  li::after {
+        content: "";
+    background: radial-gradient(circle, var(--accents-8) 0, var(--accents-8) 40%, transparent 40%);
+    top: .5rem !important;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    --tw-scale-x: 1.25;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+    opacity: .95;
+    --tw-blur: blur(24px);
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+  .active {
+    color: white;
+    background-color: #82828252;
+  }
+</style>

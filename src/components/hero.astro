@@ -1,13 +1,33 @@
-<section class="max-w-4xl my-20 mx-auto flex flex-col justify-evenly items-center text-white">
-  <img width="200" class="w-[120px] md:w-[250px] rounded-full" src="https://media.licdn.com/dms/image/v2/D4E03AQGygdarBzefmA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1723845653781?e=1735776000&v=beta&t=aiD2L46V8UVOCaohqG0uCBYQoqh9vzCx4vsbmCQek9w" alt="">
-  <h1 class="text-3xl font-semibold text-center">I do code and make content 
-    <span class="bg-gradient-to-r from-orange-500 to-purple-500 bg-clip-text text-transparent">
-      about it!
+---
+import Image from "astro/components/Image.astro";
+---
+
+<section
+  class="max-w-4xl pt-20 min-h-screen mx-auto flex flex-col justify-evenly items-center gap-4 text-white"
+>
+  <Image
+    width="200"
+    height="200"
+    class="w-[120px] md:w-[250px] rounded-full"
+    src="https://media.licdn.com/dms/image/v2/D4E03AQGygdarBzefmA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1723845653781?e=1735776000&v=beta&t=aiD2L46V8UVOCaohqG0uCBYQoqh9vzCx4vsbmCQek9w"
+    alt="Luis Morales"
+    loading="eager"
+  />
+  <h1 class="text-5xl max-w-xl font-semibold text-center">
+    Desarrollo software con visión en 
+    <span
+      class="bg-gradient-to-r from-orange-500 to-purple-500 bg-clip-text text-transparent"
+    >
+    IA y datos!
     </span>
   </h1>
-  <p class="text-center">I am a seasoned full-stack software engineer with over 8 years of professional experience, specializing in backend development. My expertise lies in crafting robust and scalable SaaS-ased architectures on the Amazon AWS platform.</p>
+  <p class="text-center max-w-xl">
+    Apasionado por crear soluciones de software inteligentes, con experiencia en IA y análisis de datos. Certificado en AI-900, domino Python y sus librerías clave como Numpy, Pandas y Keras para el desarrollo de inteligencia artificial y manejo de datos. Además, combino conocimientos en C++, JavaScript, y frameworks como Astro en frontend y Express.js en backend. Mi enfoque: construir aplicaciones eficientes y con propósito, impulsadas por datos.
+  </p>
   <div class="flex justify-between min-w-[350px]">
-    <button class="px-8 py-4 rounded-full bg-white text-black border-2">Get In Touch</button>
+    <button class="px-8 py-4 rounded-full bg-white text-black border-2"
+      >Get In Touch</button
+    >
     <button class="px-8 py-4 rounded-full border-2">Download CV</button>
   </div>
 </section>

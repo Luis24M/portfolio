@@ -1,0 +1,103 @@
+---
+import Image from "astro/components/Image.astro";
+import Proyecto from "./Proyecto.astro";
+---
+
+<section
+  id="proyectos"
+  class="w-full flex flex-col justify-center h-screen overflow-hidden max-w-screen mx-auto"
+>
+  <div
+    id="proyectos-scroll"
+    class="flex h-semifull transition-transform overflow-x-scroll duration-500 ease-in-out no-scrollbar no-scrollbar snap-x snap-mandatory"
+  >
+    <div class="min-w-[10%]"></div>
+    <Proyecto />
+    <Proyecto />
+    <Proyecto />
+    <div class="min-w-[10%]"></div>
+  </div>
+  <!-- controles  -->
+  <div class="flex justify-end gap-4 mr-4 mx-auto">
+    <button id="back" class=" opacity-50" disabled>
+      <Image
+        src="/back.svg"
+        alt="back"
+        class="rounded-full bg-gray-700 hover:bg-gray-600 transition-all duration-300 ease-in-out"
+        width="32"
+        height="32"
+        loading="lazy"
+      />
+    </button>
+    <button id="next">
+      <Image
+        src="/next.svg"
+        alt="next"
+        class="rounded-full bg-gray-700 hover:bg-gray-600 transition-all duration-300 ease-in-out"
+        width="32"
+        height="32"
+        loading="lazy"
+      />
+    </button>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const back = document.getElementById("back");
+    const next = document.getElementById("next");
+    const nProjects = document.querySelectorAll("#proyectos-scroll > div").length - 3;
+    const maxWidth = nProjects * window.innerWidth;
+    let position = 0;
+    const proyectosScroll = document.getElementById("proyectos-scroll");
+
+    back?.addEventListener("click", () => {
+      if (position === 0){
+        return;
+      } 
+      position = position - window.innerWidth;
+      proyectosScroll?.scrollTo({
+        left: position,
+        behavior: "smooth",
+      });
+      console.log(position);
+    });
+
+    next?.addEventListener("click", () => {
+      if(position === maxWidth){
+        return;
+      }
+      position = position + window.innerWidth;
+      proyectosScroll?.scrollTo({
+        left: position,
+        behavior: "smooth",
+      });
+      console.log(position);
+    });
+
+    proyectosScroll?.addEventListener("scroll", () => {
+    position = proyectosScroll?.scrollLeft;
+    const maxWidthScroll = (nProjects * Math.round(window.innerWidth * 0.8)) - 50; 
+    if (position === 0){
+      back?.classList.add("opacity-50");
+      back?.setAttribute("disabled", "true");
+      next?.classList.remove("opacity-50");
+      return;
+    } else {
+      back?.classList.remove("opacity-50");
+      back?.removeAttribute("disabled");
+    }
+
+    if( position >= maxWidthScroll){
+        back?.classList.remove("opacity-50");
+        next?.classList.add("opacity-50");
+        next?.setAttribute("disabled", "true");
+        return;
+      } else{
+        next?.classList.remove("opacity-50");
+        next?.removeAttribute("disabled");
+      }
+    });
+
+  });
+</script>
