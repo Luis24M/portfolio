@@ -60,7 +60,6 @@ import Proyecto from "./Proyecto.astro";
         left: position,
         behavior: "smooth",
       });
-      console.log(position);
     });
 
     next?.addEventListener("click", () => {
@@ -72,7 +71,6 @@ import Proyecto from "./Proyecto.astro";
         left: position,
         behavior: "smooth",
       });
-      console.log(position);
     });
 
     proyectosScroll?.addEventListener("scroll", () => {
@@ -98,6 +96,5 @@ import Proyecto from "./Proyecto.astro";
         next?.removeAttribute("disabled");
       }
     });
-
   });
 </script>
