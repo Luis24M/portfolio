@@ -5,35 +5,277 @@ import Image from "astro/components/Image.astro";
 <section
   class="max-w-4xl pt-20 px-5 min-h-screen mx-auto flex flex-col justify-evenly items-center gap-4 text-white"
 >
+  <canvas
+    id="game-of-life-canvas"
+    class="absolute top-0 left-0 w-full h-full items-center justify-center z-10 pointer-events-auto"
+  ></canvas>
+  <div class="absolute bottom-4 right-4 z-20 flex gap-2 {}">
+    <button
+      id="reset-btn"
+      class="z-50 bg-black/40 hover:bg-black/60 text-white px-4 py-2 rounded-md transition-all backdrop-blur-sm border border-white/20"
+      >Reiniciar</button
+    >
+    <button
+      id="pause-btn"
+      class="z-20 bg-black/40 hover:bg-black/60 text-white px-4 py-2 rounded-md transition-all backdrop-blur-sm border border-white/20"
+      >Pausar</button
+    >
+    <button
+      id="clear-btn"
+      class="z-20 bg-black/40 hover:bg-black/60 text-white px-4 py-2 rounded-md transition-all backdrop-blur-sm border border-white/20"
+      >Limpiar</button
+      >
+  </div>
+
   <Image
     width="200"
     height="200"
-    class="w-[120px] md:w-[250px] h-[120px] md:h-[250px] rounded-full object-cover overflow-hidden"
+    class="w-[120px] md:w-[250px] h-[120px] md:h-[250px] rounded-full object-cover overflow-hidden z-20"
     src="/profile.webp"
-    alt="Luis Morales"
+    alt="Luis Morales Foto de perfil"
     loading="eager"
   />
-  <h1 class="md:text-5xl text-3xl max-w-xl font-semibold text-center">
+  <h1 class="md:text-5xl text-3xl max-w-xl font-semibold text-center z-20">
     Desarrollo software con visión en
     <span
-      class="bg-gradient-to-r from-orange-500 to-purple-500 bg-clip-text text-transparent"
+      class="bg-gradient-to-r from-orange-500 to-purple-500 bg-clip-text text-transparent z-20"
     >
       IA y datos!
     </span>
   </h1>
-  <p class="text-center max-w-xl">
-    Apasionado por crear soluciones de software inteligentes, con experiencia en
-    IA y análisis de datos. Certificado en AI-900, domino Python y sus librerías
-    clave como Numpy, Pandas y Keras para el desarrollo de inteligencia
-    artificial y manejo de datos. Además, combino conocimientos en C++,
-    JavaScript, y frameworks como Astro en frontend y Express.js en backend. Mi
-    enfoque: construir aplicaciones eficientes y con propósito, impulsadas por
-    datos.
-  </p>
+  <div
+    class="flex flex-col items-center gap-4 z-20 p-4 rounded-xl backdrop-blur-sm"
+  >
+    <p class="text-center max-w-xl text-lg font-semibold z-20">
+      Apasionado por crear soluciones de software inteligentes, con experiencia
+      en IA y análisis de datos. Certificado en AI-900, domino Python y sus
+      librerías clave como Numpy, Pandas y Keras para el desarrollo de
+      inteligencia artificial y manejo de datos. Además, combino conocimientos
+      en C++, JavaScript, y frameworks como Astro en frontend y Express.js en
+      backend. Mi enfoque: construir aplicaciones eficientes y con propósito,
+      impulsadas por datos.
+    </p>
+  </div>
   <div class="flex justify-around min-w-[350px]">
-    <button class="md:px-8 px-4 md:py-4 py-2 rounded-full bg-white text-black border-2"
+    <button
+      class="md:px-8 px-4 md:py-4 py-2 rounded-full bg-white text-black border-2"
       >Get In Touch</button
     >
-    <button class="md:px-8 px-4 md:py-4 py-2 rounded-full border-2">Download CV</button>
+    <button class="md:px-8 px-4 md:py-4 py-2 rounded-full border-2"
+      >Download CV</button
+    >
   </div>
 </section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const canvas = document.getElementById("game-of-life-canvas");
+    const ctx = (canvas as HTMLCanvasElement)?.getContext("2d");
+    if (!ctx) {
+      console.error("Failed to get 2D context: canvas is null");
+      return;
+    }
+    const resetBtn = document.getElementById("reset-btn");
+    const pauseBtn = document.getElementById("pause-btn");
+    const clearBtn = document.getElementById("clear-btn");
+
+    // Set canvas to full screen
+
+    if (canvas) {
+      (canvas as HTMLCanvasElement).width = window.innerWidth;
+      (canvas as HTMLCanvasElement).height = window.innerHeight;
+    }
+
+    // Cell size and grid
+    const cellSize = 10;
+    const cols = Math.floor((canvas as HTMLCanvasElement).width / cellSize);
+    const rows = Math.floor((canvas as HTMLCanvasElement).height / cellSize);
+
+    const randomColor = () => {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    };
+
+    const aliveColor = randomColor();
+    const deadColor = "#13151a";
+
+    // Game state
+    let grid: boolean[][] = [];
+    let isPaused = false;
+    let animationId;
+
+    // Initialize grid with random cells
+    function initGrid() {
+      grid = new Array(cols);
+      for (let i = 0; i < cols; i++) {
+        grid[i] = new Array(rows);
+        for (let j = 0; j < rows; j++) {
+          grid[i][j] = Math.random() > 0.85; // 15% chance of being alive
+        }
+      }
+    }
+
+    function clearGrid() {
+      grid = new Array(cols);
+      for (let i = 0; i < cols; i++) {
+        grid[i] = new Array(rows);
+        for (let j = 0; j < rows; j++) {
+          grid[i][j] = false;
+        }
+      }
+    }
+
+    // Draw the current state
+    function draw() {
+      if (ctx) {
+        ctx.clearRect(
+          0,
+          0,
+          (canvas as HTMLCanvasElement).width,
+          (canvas as HTMLCanvasElement).height
+        );
+      }
+
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const x = i * cellSize;
+          const y = j * cellSize;
+
+          if (grid[i][j]) {
+            if (ctx) {
+              ctx.fillStyle = aliveColor;
+              ctx.fillRect(x, y, cellSize, cellSize);
+            }
+          } else {
+            if (ctx) {
+              ctx.fillStyle = deadColor;
+              ctx.fillRect(x, y, cellSize, cellSize);
+            }
+          }
+        }
+      }
+    }
+
+    // Update grid based on Conway's Game of Life rules
+    function update() {
+      let nextGrid = new Array(cols);
+      for (let i = 0; i < cols; i++) {
+        nextGrid[i] = new Array(rows);
+      }
+
+      // Calculate next generation
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const state = grid[i][j];
+          let neighbors = countNeighbors(grid, i, j);
+
+          if (state && (neighbors < 2 || neighbors > 3)) {
+            nextGrid[i][j] = false; // Dies from under/overpopulation
+          } else if (!state && neighbors === 3) {
+            nextGrid[i][j] = true; // Born from reproduction
+          } else {
+            nextGrid[i][j] = state; // Remains the same
+          }
+        }
+      }
+
+      grid = nextGrid;
+    }
+
+    // Count neighbors for a cell
+    function countNeighbors(grid: boolean[][], x: number, y: number) {
+      let sum = 0;
+      for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+          const col = (x + i + cols) % cols;
+          const row = (y + j + rows) % rows;
+          sum += grid[col][row] ? 1 : 0;
+        }
+      }
+      sum -= grid[x][y] ? 1 : 0; // Don't count self
+      return sum;
+    }
+
+    // Animation loop
+    function animate() {
+      if (!isPaused) {
+        update();
+      }
+      draw();
+      animationId = requestAnimationFrame(animate);
+    }
+
+    // Handle window resize
+    window.addEventListener("resize", function () {
+      (canvas as HTMLCanvasElement).width = window.innerWidth;
+      (canvas as HTMLCanvasElement).height = window.innerHeight;
+      initGrid();
+    });
+
+    // Control buttons
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        initGrid();
+      });
+    }
+
+    if (pauseBtn) {
+      pauseBtn.addEventListener("click", function () {
+        isPaused = !isPaused;
+        pauseBtn.textContent = isPaused ? "Reanudar" : "Pausar";
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function () {
+        clearGrid();
+      });
+    }
+
+    // Añadir estas variables al principio de tu script
+    let isMouseDown = false;
+
+    // Mantener los event listeners existentes y añadir los siguientes:
+    canvas?.addEventListener("mousedown", function (event: MouseEvent) {
+      isMouseDown = true;
+      // Procesar el clic inicial
+      handleMouseEvent(event);
+    });
+
+    canvas?.addEventListener("mouseup", function () {
+      isMouseDown = false;
+    });
+
+    canvas?.addEventListener("mousemove", function (event: MouseEvent) {
+      if (isMouseDown) {
+        handleMouseEvent(event);
+      }
+    });
+
+    // Mover la lógica de procesamiento de eventos a una función separada
+    function handleMouseEvent(event: MouseEvent) {
+      const rect = (canvas as HTMLCanvasElement).getBoundingClientRect();
+      const x = Math.floor((event.clientX - rect.left) / cellSize);
+      const y = Math.floor((event.clientY - rect.top) / cellSize);
+
+      // Toggle the state of the clicked cell
+      if (x >= 0 && x < cols && y >= 0 && y < rows) {
+        // Cuando arrastras, activa las celdas en lugar de alternar su estado
+        grid[x][y] = true;
+        // Redibuja inmediatamente para ver el cambio
+        draw();
+      }
+    }
+
+    // Reemplazar el event listener de clic existente con esto:
+    canvas?.addEventListener("click", handleMouseEvent);
+
+    // Start the game
+    initGrid();
+    animate();
+  });
+</script>
